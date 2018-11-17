@@ -173,6 +173,13 @@ int client_send(const eapauth_t *user, const eapol_t *data) {
             p_buf += data->eap.eap_len - 5;
         }
     }
+
+    // 对start包填充0使包大小到达64字节
+    if (data->type == EAPOL_START) {
+        memset(p_buf, 0, 46);
+        p_buf += 46;
+    }
+
     len = sendto(user->client_fd, buf, p_buf - buf, MSG_NOSIGNAL,
             (struct sockaddr *) &user->addr, sizeof(user->addr));
     if (len <= 0) return EAPAUTH_ERR;
